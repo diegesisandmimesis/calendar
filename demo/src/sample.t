@@ -21,28 +21,29 @@
 
 #include "calendar.h"
 
-versionInfo: GameID
-        name = 'calendar Library Demo Game'
-        byline = 'Diegesis & Mimesis'
-        desc = 'Demo game for the calendar library. '
-        version = '1.0'
-        IFID = '12345'
-	showAbout() {
-		"This is a simple test game that demonstrates the features
-		of the calendar library.
-		<.p>
-		Consult the README.txt document distributed with the library
-		source for a quick summary of how to use the library in your
-		own games.
-		<.p>
-		The library source is also extensively commented in a way
-		intended to make it as readable as possible. ";
-	}
-;
+versionInfo: GameID;
 gameMain: GameMainDef
 	initialPlayerChar = me
 	inlineCommand(cmd) { "<b>&gt;<<toString(cmd).toUpper()>></b>"; }
 	printCommand(cmd) { "<.p>\n\t<<inlineCommand(cmd)>><.p> "; }
+
+	newGame() {
+		local c, i;
+
+		c = new Calendar(1979, 6, 22);
+		for(i = 1; i <= 100; i++) {
+			_logDate(c);
+			c.advanceDay();
+		}
+	}
+
+	_logDate(d) {
+		"Date: <<d.getMonthName()>> <<toString(d.getDay())>>,
+			<<toString(d.getYear())>>\n ";
+		"Season: <<d.getSeasonName()>>\n ";
+		"Phase of moon: <<toString(d.getMoonPhaseName())>>\n ";
+		"<.p> ";
+	}
 ;
 
 startRoom: Room 'Void' "This is a featureless void.";
