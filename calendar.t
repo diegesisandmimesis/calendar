@@ -35,13 +35,13 @@
 //
 //	Getting the season name:
 //
-//		// Outputs "spring".
+//		// Outputs "summer".
 //		"<<c.getSeasonName()>>";
 //
 //	Getting the season value, which is an enum consisting of:
 //	seasonWinter, seasonSpring, seasonSummer, seasonFall.
 //
-//		// Assigns seasonSpring to s.
+//		// Assigns seasonSummer to s.
 //		local s = c.getSeason();
 //
 //
@@ -134,15 +134,15 @@ class Calendar: object
 			d = getDay();
 
 		d0 = new Date(2012, m, d);
-		
+
 		if((d0.compareTo(_seasons[eWinterSolstice]) >= 0)
 			|| (d0.compareTo(_seasons[eSpringEquinox]) < 0))
 			return(seasonWinter);
 		if((d0.compareTo(_seasons[eSpringEquinox]) >= 0)
-			|| (d0.compareTo(_seasons[eSummerSolstice]) < 0))
+			&& (d0.compareTo(_seasons[eSummerSolstice]) < 0))
 			return(seasonSpring);
 		if((d0.compareTo(_seasons[eSummerSolstice]) >= 0)
-			|| (d0.compareTo(_seasons[eFallEquinox]) < 0))
+			&& (d0.compareTo(_seasons[eFallEquinox]) < 0))
 			return(seasonSummer);
 		return(seasonFall);
 	}

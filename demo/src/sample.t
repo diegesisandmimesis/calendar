@@ -30,13 +30,20 @@ gameMain: GameMainDef
 	newGame() {
 		local c, i;
 
+		// Create a calendar with a current date of June 22, 1979.
 		c = new Calendar(1979, 6, 22);
+
+		// Loop through a hundred days.
 		for(i = 1; i <= 100; i++) {
+			// Output information about the current date.
 			_logDate(c);
+
+			// Advance the calendar's date by one day.
 			c.advanceDay();
 		}
 	}
 
+	// Log some stuff about the date:
 	_logDate(d) {
 		"Date: <<d.getMonthName()>> <<toString(d.getDay())>>,
 			<<toString(d.getYear())>>\n ";
