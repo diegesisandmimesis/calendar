@@ -60,6 +60,8 @@
 #include <adv3.h>
 #include <en_us.h>
 
+#include "bignum.h"
+
 #include "calendar.h"
 
 #include "date.h"
@@ -78,6 +80,19 @@ enum eWinterSolstice, eSpringEquinox, eSummerSolstice, eFallEquinox;
 class Calendar: object
 	startingDate = nil
 	currentDate = nil
+
+	// Day of year and year.  When we change the current date, we
+	// recompute things when these DO NOT remain the same.
+	_doy = nil
+	_y = nil
+
+	// Cached values
+	_season = nil
+	_phase = nil
+	_sidereal = nil
+
+	// Save the timezone, because Date will only return the LOCAL timezone
+	_tz = nil
 
 	_seasons = nil
 
@@ -99,15 +114,19 @@ class Calendar: object
 		'waning crescent'
 	]
 
-	construct(y?, m?, d?) {
-		if(y && m && d) {
+	construct(y?, m?, d?, tz?) {
+		if(y != nil) {
 			if(!m) m = 1;
 			if(!d) d = 1;
-			startingDate = new Date(y, m, d);
+			startingDate = new Date(y, m, d, tz);
 		} else {
 			startingDate = new Date();
 		}
+		if(tz != nil)
+			_tz = tz;
 		currentDate = startingDate;
+		_doy = getDayOfYear();
+		_y = getYear();
 	}
 
 	_initSeasons() {
@@ -122,33 +141,43 @@ class Calendar: object
 		_seasons = t;
 	}
 
-	getSeason(m?, d?) {
-		local d0;
+	// Check to see if the date has changed since we computed things.
+	dateChanged() {
+		return((getDayOfYear() != _doy) || (getYear() != _y));
+	}
+
+	getSeason() {
+		local d0, d, m;
+
+		if(_season != nil)
+			return(_season);
 
 		if(_seasons == nil)
 			_initSeasons();
 
-		if(m == nil)
-			m = getMonth();
-		if(d == nil)
-			d = getDay();
+		m = getMonth();
+		d = getDay();
 
 		d0 = new Date(2012, m, d);
 
 		if((d0.compareTo(_seasons[eWinterSolstice]) >= 0)
-			|| (d0.compareTo(_seasons[eSpringEquinox]) < 0))
-			return(seasonWinter);
-		if((d0.compareTo(_seasons[eSpringEquinox]) >= 0)
-			&& (d0.compareTo(_seasons[eSummerSolstice]) < 0))
-			return(seasonSpring);
-		if((d0.compareTo(_seasons[eSummerSolstice]) >= 0)
-			&& (d0.compareTo(_seasons[eFallEquinox]) < 0))
-			return(seasonSummer);
-		return(seasonFall);
+			|| (d0.compareTo(_seasons[eSpringEquinox]) < 0)) {
+			_season = seasonWinter;
+		} else if((d0.compareTo(_seasons[eSpringEquinox]) >= 0)
+			&& (d0.compareTo(_seasons[eSummerSolstice]) < 0)) {
+			_season = seasonSpring;
+		} else if((d0.compareTo(_seasons[eSummerSolstice]) >= 0)
+			&& (d0.compareTo(_seasons[eFallEquinox]) < 0)) {
+			_season = seasonSummer;
+		} else {
+			_season = seasonFall;
+		}
+
+		return(_season);
 	}
 
-	getSeasonName(m?, d?) {
-		return(_seasonName[getSeason(m, d)]);
+	getSeasonName() {
+		return(_seasonName[getSeason()]);
 	}
 
 	// Functionally identical to the nethack moon phase code, given in
@@ -156,28 +185,81 @@ class Calendar: object
 	getMoonPhase() {
 		local d, e, g;
 
+		if(_phase != nil)
+			return(_phase);
+
 		d = getDayOfYear();
 		g = (getYear() % 19) + 1;
 		e = ((11 * g) + 18) % 30;
 		if(((e == 25) && (g > 11)) || (e == 24))
 			e++;
 
-		return( ((((((d + e) * 6) + 11) % 177) / 22) & 7) + 1);
+		_phase = ( ((((((d + e) * 6) + 11) % 177) / 22) & 7) + 1);
+		return(_phase);
 	}
 
 	getMoonPhaseName() {
 		return(_moonPhase[getMoonPhase()]);
 	}
 
-	getDay() { return(parseInt(currentDate.formatDate('%d'))); }
-	getDayOrd() { return(currentDate.formatDate('%t')); }
-	getMonth() { return(parseInt(currentDate.formatDate('%m'))); }
-	getMonthName() { return(currentDate.formatDate('%B')); }
-	getMonthAbbr() { return(currentDate.formatDate('%b')); }
-	getYear() { return(parseInt(currentDate.formatDate('%Y'))); }
-	getDayOfYear() { return(parseInt(currentDate.formatDate('%j'))); }
+	getDay() { return(parseInt(currentDate.formatDate('%d', _tz))); }
+	getDayOrd() { return(currentDate.formatDate('%t', _tz)); }
+	getMonth() { return(parseInt(currentDate.formatDate('%m', _tz))); }
+	getMonthName() { return(currentDate.formatDate('%B', _tz)); }
+	getMonthAbbr() { return(currentDate.formatDate('%b', _tz)); }
+	getYear() { return(parseInt(currentDate.formatDate('%Y', _tz))); }
+	getDayOfYear() { return(parseInt(currentDate.formatDate('%j', _tz))); }
+	getDayOfWeek() { return(parseInt(currentDate.formatDate('%w', _tz))); }
+	getDayOfWeekName() { return(currentDate.formatDate('%A', _tz)); }
+	getTZ() { return(currentDate.formatDate('%z', _tz)); }
+	getTZOffset() {
+		return(toInteger(currentDate.formatDate('%Z', _tz)) / 100);
+	}
+	getTZUTCOffset() {
+		local off;
+		off = getTZOffset();
+		return('UTC<<((off > 0) ? '+' : '')>><<toString(off)>>');
+	}
 
-	advanceDay() { currentDate = currentDate.addInterval([0, 0, 1]); }
-	advanceMonth() { currentDate = currentDate.addInterval([0, 1, 0]); }
-	advanceYear() { currentDate = currentDate.addInterval([1, 0, 0]); }
+	setDate(v?) {
+		if((v == nil) || !v.ofKind(Date))
+			return;
+		currentDate = v;
+		if(dateChanged()) {
+			clearCache();
+			_doy = getDayOfYear();
+			_y = getYear();
+		}
+	}
+
+	advanceDay() { setDate(currentDate.addInterval([0, 0, 1])); }
+	advanceMonth() { setDate(currentDate.addInterval([0, 1, 0])); }
+	advanceYear() { setDate(currentDate.addInterval([1, 0, 0])); }
+
+	clearCache() {
+		_season = nil;
+		_phase = nil;
+		_sidereal = nil;
+	}
+
+	// Get a (very) approximate sidereal time at midnight.
+	getSiderealTime() {
+		local d0, jd;
+
+		if(_sidereal != nil)
+			return(_sidereal);
+
+		d0 = new Date(getYear(), getMonth(), getDay(),
+			_tz);
+
+		jd = d0.getJulianDay();
+		jd -= 2451545.0;
+		jd = (18.697375 + (24.065709824279 * jd));
+		jd = toInteger(jd.roundToDecimal(0)) % 24;
+
+		while(jd < 0) jd += 24;
+		_sidereal = jd;
+
+		return(_sidereal);
+	}
 ;
