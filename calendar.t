@@ -91,6 +91,8 @@ class Calendar: object
 	_phase = nil
 	_sidereal = nil
 
+	longitude = nil
+
 	// Save the timezone, because Date will only return the LOCAL timezone
 	_tz = nil
 
@@ -242,8 +244,8 @@ class Calendar: object
 		_sidereal = nil;
 	}
 
-	// Get a (very) approximate sidereal time at midnight.
-	getSiderealTime() {
+	// Get a (very) approximate Greenwich sidereal time at midnight.
+	getSiderealTime(long?) {
 		local d0, jd;
 
 		if(_sidereal != nil)
@@ -257,9 +259,30 @@ class Calendar: object
 		jd = (18.697375 + (24.065709824279 * jd));
 		jd = toInteger(jd.roundToDecimal(0)) % 24;
 
-		while(jd < 0) jd += 24;
+
+		while(jd < 0)
+			jd += 24;
+		while(jd > 24)
+			jd -= 24;
 		_sidereal = jd;
 
 		return(_sidereal);
+	}
+
+	// Get the local sidereal time.  
+	// First arg is the local hour, second is the local longitude.
+	getLocalSiderealTime(h?, long?) {
+		local st;
+
+		if(h == nil)
+			h = 0;
+		st = getSiderealTime() + h;
+		if(long != nil)
+			st += (long / 15);
+		while(st < 0)
+			st += 24;
+		while (st > 24)
+			st -= 24;
+		return(st);
 	}
 ;

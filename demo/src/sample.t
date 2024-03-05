@@ -32,7 +32,6 @@ gameMain: GameMainDef
 
 		// Create a calendar with a current date of June 22, 1979.
 		c = new Calendar(1979, 6, 22, 'EST-5EDT');
-		//c = new Calendar(1979, 6, 22, 'PST-8PDT');
 
 		// Loop through a hundred days.
 		for(i = 1; i <= 365; i++) {
@@ -51,7 +50,9 @@ gameMain: GameMainDef
 			<<toString(d.getYear())>>\n ";
 		"Season: <<d.getSeasonName()>>\n ";
 		"Phase of moon: <<toString(d.getMoonPhaseName())>>\n ";
-		"Sidereal time: <<toString(d.getSiderealTime())>>\n ";
+		"Greenwich sidereal time: <<toString(d.getSiderealTime())>>\n ";
+		"Local sidereal time:
+			<<toString(d.getLocalSiderealTime(00, -71))>>\n ";
 		"<.p> ";
 	}
 ;
