@@ -245,7 +245,7 @@ class Calendar: object
 	}
 
 	// Get a (very) approximate Greenwich sidereal time at midnight.
-	getSiderealTime(long?) {
+	getSiderealTime() {
 		local d0, jd;
 
 		if(_sidereal != nil)
