@@ -31,8 +31,7 @@ DefineLiteralAction(SetDate)
 ;
 
 VerbRule(SetDate)
-	'set' 'date' singleLiteral
-	:SetDateAction
+	'set' 'date' singleLiteral: SetDateAction
 	verbPhrase = 'set/setting date to (what)'
 ;
 

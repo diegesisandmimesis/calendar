@@ -292,4 +292,11 @@ class Calendar: object
 ;
 
 
-gameCalendar: Calendar;
+gameCalendar: Calendar, PreinitObject
+	execute() {
+		if(currentDate == nil)
+			currentDate = new Date();
+		if(startingDate == nil)
+			startingDate = currentDate;
+	}
+;
