@@ -234,6 +234,10 @@ class Calendar: object
 		}
 	}
 
+	setYMD(y, m, d, tz?) {
+		setDate(new Date(y, m, d, tz));
+	}
+
 	advanceDay() { setDate(currentDate.addInterval([0, 0, 1])); }
 	advanceMonth() { setDate(currentDate.addInterval([0, 1, 0])); }
 	advanceYear() { setDate(currentDate.addInterval([1, 0, 0])); }
@@ -286,3 +290,6 @@ class Calendar: object
 		return(st);
 	}
 ;
+
+
+gameCalendar: Calendar;
