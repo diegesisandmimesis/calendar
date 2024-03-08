@@ -57,6 +57,44 @@
 //		local v = c.getMoonPhase();
 //
 //
+// GLOBAL GAME CALENDAR
+//
+//	In addition to the usage above (creating standalone calendars),
+//	by default the module creates a global Calendar instance, gameCalendar.
+//
+//	By default the calendar is created with the local system time as
+//	the current date and time.
+//
+//	The following macros use the global calendar:
+//
+//		gCalendar		returns the global Calendar instance
+//		gSetDate(y, m, d)	sets the year, month, and day of the
+//						global calendar
+//		gSetTime(h)		sets the hour of the global calendar
+//
+//
+// GLOBAL GAME ENVIRONMENT
+//
+//	In addition to the global calendar, the module defines a
+//	gameEnvironment singleton to make configuring things easier.
+//
+//	The gameEnvironment.currentTime property, if non-nil, will be used
+//	to set the starting calendar time during preinit.
+//
+//		// Sets the starting date/time to be June 22, 1979, at
+//		// 23:00 local time.
+//		// The Date syntax is just the standard TADS3 Date syntax.
+//		modify gameEnvironment
+//			currentDate = new Date(1979, 6, 22, 23, 0, 0, 0,
+//				'EST-5EDT');
+//		;
+//
+//	By itself this doesn't accomplish much (you can declare the time
+//	exactly the same way on gameCalendar), but other modules (like
+//	the nightSky module) will also use the gameEnvironment singleton to
+//	configure things, enabling you to set everything in one place.
+//
+//
 #include <adv3.h>
 #include <en_us.h>
 
@@ -222,6 +260,7 @@ class Calendar: object
 		off = getTZOffset();
 		return('UTC<<((off > 0) ? '+' : '')>><<toString(off)>>');
 	}
+	getHour() { return(parseInt(currentDate.formatDate('%H'))); }
 
 	setDate(v?) {
 		if((v == nil) || !v.ofKind(Date))
@@ -238,9 +277,15 @@ class Calendar: object
 		setDate(new Date(y, m, d, tz));
 	}
 
+	setTime(h) {
+		setDate(new Date(getYear(), getMonth(), getDay(), h,
+			0, 0, 0, _tz));
+	}
+
 	advanceDay() { setDate(currentDate.addInterval([0, 0, 1])); }
 	advanceMonth() { setDate(currentDate.addInterval([0, 1, 0])); }
 	advanceYear() { setDate(currentDate.addInterval([1, 0, 0])); }
+	advanceHour() { setDate(currentDate.addInterval([0, 0, 0, 1])); }
 
 	clearCache() {
 		_season = nil;
@@ -291,12 +336,22 @@ class Calendar: object
 	}
 ;
 
-
+// Global game calendar.
 gameCalendar: Calendar, PreinitObject
+	execBeforeMe = static [ gameEnvironment ]
 	execute() {
 		if(currentDate == nil)
 			currentDate = new Date();
 		if(startingDate == nil)
 			startingDate = currentDate;
+	}
+;
+
+gameEnvironment: PreinitObject
+	currentDate = nil
+
+	execute() {
+		if(currentDate != nil)
+			gameCalendar.currentDate = currentDate;
 	}
 ;
