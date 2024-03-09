@@ -116,13 +116,13 @@ enum seasonWinter, seasonSpring, seasonSummer, seasonFall;
 enum eWinterSolstice, eSpringEquinox, eSummerSolstice, eFallEquinox;
 
 class Calendar: object
+	// Update cached computations if the time has changed by this many
+	// seconds.
+	// By default we update if the difference is a day or more.
+	updateInterval = 86400
+
 	startingDate = nil
 	currentDate = nil
-
-	// Day of year and year.  When we change the current date, we
-	// recompute things when these DO NOT remain the same.
-	_doy = nil
-	_y = nil
 
 	// Cached values
 	_season = nil
@@ -165,8 +165,6 @@ class Calendar: object
 		if(tz != nil)
 			_tz = tz;
 		currentDate = startingDate;
-		_doy = getDayOfYear();
-		_y = getYear();
 	}
 
 	_initSeasons() {
@@ -181,9 +179,11 @@ class Calendar: object
 		_seasons = t;
 	}
 
-	// Check to see if the date has changed since we computed things.
-	dateChanged() {
-		return((getDayOfYear() != _doy) || (getYear() != _y));
+	// Returns the difference between the passed Date and the
+	// currentDate, in seconds.
+	dateDiff(v) {
+		return(currentDate
+			? abs(toInteger((v - currentDate) * 86400)) : nil);
 	}
 
 	getSeason() {
@@ -261,16 +261,15 @@ class Calendar: object
 		return('UTC<<((off > 0) ? '+' : '')>><<toString(off)>>');
 	}
 	getHour() { return(parseInt(currentDate.formatDate('%H'))); }
+	getJulianDate() { return(parseInt(currentDate.formatDate('%J'))); }
 
 	setDate(v?) {
 		if((v == nil) || !v.ofKind(Date))
 			return;
-		currentDate = v;
-		if(dateChanged()) {
+		if(dateDiff(v) >= updateInterval) {
 			clearCache();
-			_doy = getDayOfYear();
-			_y = getYear();
 		}
+		currentDate = v;
 	}
 
 	setYMD(y, m, d, tz?) {
