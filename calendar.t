@@ -115,6 +115,8 @@ calendarModuleID: ModuleID {
 enum seasonWinter, seasonSpring, seasonSummer, seasonFall;
 enum eWinterSolstice, eSpringEquinox, eSummerSolstice, eFallEquinox;
 
+//enum eVigil, eMatins, eLauds, ePrime, eTerce, eSext, eNones, eVespers, eCompline;
+
 class Calendar: object
 	// Update cached computations if the time has changed by this many
 	// seconds.
@@ -153,6 +155,20 @@ class Calendar: object
 		'last quarter',
 		'waning crescent'
 	]
+
+/*
+	_canonicalHours = static [
+		eVigil -> 2,
+		eMatins -> 3,
+		eLauds -> 5,
+		ePrime -> 6,
+		eTerce -> 9,
+		eSext -> 12,
+		eNones -> 15,
+		eVespers -> 18,
+		eCompline -> 19
+	]
+*/
 
 	construct(y?, m?, d?, tz?) {
 		if(y != nil) {
@@ -262,6 +278,9 @@ class Calendar: object
 	}
 	getHour() { return(parseInt(currentDate.formatDate('%H'))); }
 	getJulianDate() { return(parseInt(currentDate.formatDate('%J'))); }
+	getFullJulianDate() { return(currentDate.formatDate('%J')); }
+
+	resolveHour(h?) { return(h ? h : getHour()); }
 
 	setDate(v?) {
 		if((v == nil) || !v.ofKind(Date))
@@ -276,9 +295,11 @@ class Calendar: object
 		setDate(new Date(y, m, d, tz));
 	}
 
+	setHour(h) { setTime(h); }
+
 	setTime(h) {
-		setDate(new Date(getYear(), getMonth(), getDay(), h,
-			0, 0, 0, _tz));
+		setDate(new Date(getYear(), getMonth(), getDay(),
+			(h % 24), 0, 0, 0, _tz));
 	}
 
 	advanceDay() { setDate(currentDate.addInterval([0, 0, 1])); }
@@ -333,6 +354,16 @@ class Calendar: object
 			st -= 24;
 		return(st);
 	}
+/*
+
+	setCanonicalHour(v) {
+		local t;
+
+		if((t = _canonicalHours[v]) == nil)
+			return(nil);
+		setTime(t);
+	}
+*/
 ;
 
 // Global game calendar.

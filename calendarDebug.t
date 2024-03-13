@@ -9,6 +9,37 @@
 
 #ifdef __DEBUG
 
+modify Calendar
+	_debugDailyCycle() {
+		if(dailyCycle == nil) {
+			"No daily cycle\n ";
+			return;
+		}
+		dailyCycle._debugDailyCycle();
+	}
+;
+
+modify DailyCycle
+	// Go through a 24 hour cycle, outputting the period ID for
+	// each hour.
+	_debugDailyCycle() {
+		local c, i, id;
+
+		c = new Calendar();
+		c.dailyCycle = self;
+
+		for(i = 0; i <= 23; i++) {
+			c.setTime(i);
+			"\n<<sprintf('%02d', i)>>:\t";
+			if((id = c.matchPeriod(i)) == nil)
+				"no period";
+			else
+				"<<id>>";
+			"\n ";
+		}
+	}
+;
+
 DefineLiteralAction(SetDate)
 	execAction() {
 		local ar, c, str;

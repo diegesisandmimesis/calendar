@@ -9,4 +9,6 @@
 #define gSetTime(h) (gameCalendar.setTime(h))
 #define gCalendar (gameCalendar)
 
+Period template 'id' 'name'? +hour;
+
 #define CALENDAR_H
