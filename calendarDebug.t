@@ -56,7 +56,8 @@ DefineLiteralAction(SetDate)
 			gSetTime(toInteger(ar[4]));
 
 		c = gCalendar;
-		"Date is now <<c.getMonthName()>> <<toString(c.getDay())>>,
+		"It is now <<toString(c.getHour())>>:00
+			<<c.getMonthName()>> <<toString(c.getDay())>>,
 			<<toString(c.getYear())>>.\n ";
 		"<.p> ";
 		"Season: <<c.getSeasonName()>>\n ";
