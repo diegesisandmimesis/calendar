@@ -156,20 +156,6 @@ class Calendar: object
 		'waning crescent'
 	]
 
-/*
-	_canonicalHours = static [
-		eVigil -> 2,
-		eMatins -> 3,
-		eLauds -> 5,
-		ePrime -> 6,
-		eTerce -> 9,
-		eSext -> 12,
-		eNones -> 15,
-		eVespers -> 18,
-		eCompline -> 19
-	]
-*/
-
 	construct(y?, m?, d?, tz?) {
 		if(y != nil) {
 			if(!m) m = 1;
@@ -354,16 +340,6 @@ class Calendar: object
 			st -= 24;
 		return(st);
 	}
-/*
-
-	setCanonicalHour(v) {
-		local t;
-
-		if((t = _canonicalHours[v]) == nil)
-			return(nil);
-		setTime(t);
-	}
-*/
 ;
 
 // Global game calendar.
