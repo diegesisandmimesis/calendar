@@ -253,7 +253,7 @@ class Calendar: object
 	getDayOfYear() { return(parseInt(currentDate.formatDate('%j', _tz))); }
 	getDayOfWeek() { return(parseInt(currentDate.formatDate('%w', _tz))); }
 	getDayOfWeekName() { return(currentDate.formatDate('%A', _tz)); }
-	getTZ() { return(currentDate.formatDate('%z', _tz)); }
+	getTZ() { return(currentDate.formatDate('%z')); }
 	getTZOffset() {
 		return(toInteger(currentDate.formatDate('%Z', _tz)) / 100);
 	}
@@ -262,9 +262,14 @@ class Calendar: object
 		off = getTZOffset();
 		return('UTC<<((off > 0) ? '+' : '')>><<toString(off)>>');
 	}
-	getHour() { return(parseInt(currentDate.formatDate('%H'))); }
+	getHour() { return(parseInt(currentDate.formatDate('%H', _tz))); }
 	getJulianDate() { return(parseInt(currentDate.formatDate('%J'))); }
 	getFullJulianDate() { return(currentDate.formatDate('%J')); }
+	getTimestamp() { return(toInteger(currentDate.formatDate('%s'))); }
+
+	cloneDate() {
+		return(new Date(toInteger(currentDate.formatDate('%s')), 'U'));
+	}
 
 	resolveHour(h?) { return(h ? h : getHour()); }
 
