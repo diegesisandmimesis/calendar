@@ -261,6 +261,34 @@ modify Calendar
 
 	matchPeriod(h?) { return(getDailyCycle().matchPeriod(resolveHour(h))); }
 
+	// Advance to the next period, advancing the day if necessary.
+	advancePeriod() {
+		local c, id, idx, p;
+
+		if((id = matchPeriod()) == nil)
+			return(nil);
+
+		c = getDailyCycle();
+		if(c.periods == nil)
+			return(nil);
+
+		if((p = c.getPeriod(id)) == nil)
+			return(nil);
+
+		if((idx = c.periods.indexOf(p)) == nil)
+			return(nil);
+
+		idx += 1;
+		if(idx > c.periods.length) {
+			advanceDay();
+			idx = 1;
+		}
+		p = c.periods[idx];
+		setPeriod(p.id);
+
+		return(true);
+	}
+
 	setDateAndPeriod(y, m, d, id) {
 		setYMD(y, m, d);
 		setPeriod(id);
