@@ -115,9 +115,11 @@ calendarModuleID: ModuleID {
 enum seasonWinter, seasonSpring, seasonSummer, seasonFall;
 enum eWinterSolstice, eSpringEquinox, eSummerSolstice, eFallEquinox;
 
-//enum eVigil, eMatins, eLauds, ePrime, eTerce, eSext, eNones, eVespers, eCompline;
-
+#ifdef CALENDAR_EVENTS
+class Calendar: EventNotifier
+#else // CALENDAR_EVENTS
 class Calendar: object
+#endif // CALENDAR_EVENTS
 	// Update cached computations if the time has changed by this many
 	// seconds.
 	// By default we update if the difference is a day or more.
@@ -276,9 +278,10 @@ class Calendar: object
 	setDate(v?) {
 		if((v == nil) || !v.ofKind(Date))
 			return;
-		if(dateDiff(v) >= updateInterval) {
+
+		if(dateDiff(v) >= updateInterval)
 			clearCache();
-		}
+
 		currentDate = v;
 	}
 
