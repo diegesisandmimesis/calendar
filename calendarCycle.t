@@ -261,6 +261,8 @@ modify Calendar
 
 	matchPeriod(h?) { return(getDailyCycle().matchPeriod(resolveHour(h))); }
 
+	currentPeriod() { return(matchPeriod()); }
+
 	// Advance to the next period, advancing the day if necessary.
 	advancePeriod() {
 		local c, id, idx, p;
