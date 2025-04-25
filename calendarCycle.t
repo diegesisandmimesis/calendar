@@ -241,7 +241,7 @@ modify Calendar
 		return(dailyCycle);
 	}
 
-	setPeriod(id) {
+	setPeriod(id, j?) {
 		local obj;
 
 		if(id == nil)
@@ -249,14 +249,14 @@ modify Calendar
 		if((obj = getDailyCycle().getPeriod(id)) == nil)
 			return(nil);
 
-		setTime(obj.hour);
+		setTime(obj.hour, j);
 
 		return(true);
 	}
 
-	setPeriodNextDay(id) {
+	setPeriodNextDay(id, j?) {
 		advanceDay();
-		setPeriod(id);
+		setPeriod(id, j);
 	}
 
 	matchPeriod(h?) { return(getDailyCycle().matchPeriod(resolveHour(h))); }
@@ -264,7 +264,7 @@ modify Calendar
 	currentPeriod() { return(matchPeriod()); }
 
 	// Advance to the next period, advancing the day if necessary.
-	advancePeriod() {
+	advancePeriod(j?) {
 		local c, id, idx, p;
 
 		if((id = matchPeriod()) == nil)
@@ -286,13 +286,13 @@ modify Calendar
 			idx = 1;
 		}
 		p = c.periods[idx];
-		setPeriod(p.id);
+		setPeriod(p.id, j);
 
 		return(true);
 	}
 
-	setDateAndPeriod(y, m, d, id) {
+	setDateAndPeriod(y, m, d, id, j?) {
 		setYMD(y, m, d);
-		setPeriod(id);
+		setPeriod(id, j);
 	}
 ;

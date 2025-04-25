@@ -42,6 +42,12 @@ gameMain: GameMainDef
 
 myNotifier: EventListener
 	eventHandler(obj) {
+		// We're subscribed to ALL calendar notifications, so
+		// we filter here in the handler.  We could
+		// alternately add an event type as the second arg
+		// when we subscribe.
+		if(obj.type != 'dateChange')
+			return;
 		"<.p>This is the rather useless event handler.<.p> ";
 	}
 ;

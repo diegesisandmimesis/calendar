@@ -275,7 +275,7 @@ class Calendar: object
 
 	resolveHour(h?) { return(h ? h : getHour()); }
 
-	setDate(v?) {
+	setDate(v?, j?) {
 		if((v == nil) || !v.ofKind(Date))
 			return;
 
@@ -285,21 +285,21 @@ class Calendar: object
 		currentDate = v;
 	}
 
-	setYMD(y, m, d, tz?) {
-		setDate(new Date(y, m, d, tz));
+	setYMD(y, m, d, tz?, j?) {
+		setDate(new Date(y, m, d, tz), j);
 	}
 
-	setHour(h) { setTime(h); }
+	setHour(h, j?) { setTime(h, j); }
 
-	setTime(h) {
+	setTime(h, j?) {
 		setDate(new Date(getYear(), getMonth(), getDay(),
-			(h % 24), 0, 0, 0, _tz));
+			(h % 24), 0, 0, 0, _tz), j);
 	}
 
-	advanceDay() { setDate(currentDate.addInterval([0, 0, 1])); }
-	advanceMonth() { setDate(currentDate.addInterval([0, 1, 0])); }
-	advanceYear() { setDate(currentDate.addInterval([1, 0, 0])); }
-	advanceHour() { setDate(currentDate.addInterval([0, 0, 0, 1])); }
+	advanceDay(j?) { setDate(currentDate.addInterval([0, 0, 1]), j); }
+	advanceMonth(j?) { setDate(currentDate.addInterval([0, 1, 0]), j); }
+	advanceYear(j?) { setDate(currentDate.addInterval([1, 0, 0]), j); }
+	advanceHour(j?) { setDate(currentDate.addInterval([0, 0, 0, 1]), j); }
 
 	clearCache() {
 		_season = nil;
