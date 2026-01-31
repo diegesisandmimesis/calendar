@@ -16,6 +16,8 @@
 #define gSetDate(y, m, d) (gameCalendar.setYMD(y, m, d))
 #define gSetTime(h) (gameCalendar.setTime(h))
 #define gCalendar (gameCalendar)
+#define gCalendarTime (gameCalendar.currentTime)
+#define gCalendarDiff(v) (gameCalendar.dateDiff(v))
 
 Period template 'id' 'name'? +hour;
 

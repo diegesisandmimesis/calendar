@@ -190,7 +190,7 @@ class Calendar: object
 			? abs(toInteger((v - currentDate) * 86400)) : nil);
 	}
 
-	getSeason() {
+	getSeason(v?) {
 		local d0, d, m;
 
 		if(_season != nil)
@@ -199,8 +199,8 @@ class Calendar: object
 		if(_seasons == nil)
 			_initSeasons();
 
-		m = getMonth();
-		d = getDay();
+		m = getMonth(v);
+		d = getDay(v);
 
 		d0 = new Date(2012, m, d);
 
@@ -220,54 +220,99 @@ class Calendar: object
 		return(_season);
 	}
 
-	getSeasonName() {
-		return(_seasonName[getSeason()]);
+	getSeasonName(v?) {
+		return(_seasonName[getSeason(v)]);
 	}
 
 	// Functionally identical to the nethack moon phase code, given in
 	// hacklib.c phase_of_moon()
-	getMoonPhase() {
-		local d, e, g;
+	getMoonPhase(v?) {
+		local d, e, g, r;
 
-		if(_phase != nil)
+		if((_phase != nil) && (v == nil))
 			return(_phase);
 
-		d = getDayOfYear();
-		g = (getYear() % 19) + 1;
+		d = getDayOfYear(v);
+		g = (getYear(v) % 19) + 1;
 		e = ((11 * g) + 18) % 30;
 		if(((e == 25) && (g > 11)) || (e == 24))
 			e++;
 
-		_phase = ( ((((((d + e) * 6) + 11) % 177) / 22) & 7) + 1);
-		return(_phase);
+		r = ( ((((((d + e) * 6) + 11) % 177) / 22) & 7) + 1);
+		if(v == nil)
+			_phase = r;
+		return(r);
 	}
 
-	getMoonPhaseName() {
-		return(_moonPhase[getMoonPhase()]);
+	getMoonPhaseName(v?) {
+		return(_moonPhase[getMoonPhase(v)]);
 	}
 
-	getDay() { return(parseInt(currentDate.formatDate('%d', _tz))); }
-	getDayOrd() { return(currentDate.formatDate('%t', _tz)); }
-	getMonth() { return(parseInt(currentDate.formatDate('%m', _tz))); }
-	getMonthName() { return(currentDate.formatDate('%B', _tz)); }
-	getMonthAbbr() { return(currentDate.formatDate('%b', _tz)); }
-	getYear() { return(parseInt(currentDate.formatDate('%Y', _tz))); }
-	getDayOfYear() { return(parseInt(currentDate.formatDate('%j', _tz))); }
-	getDayOfWeek() { return(parseInt(currentDate.formatDate('%w', _tz))); }
-	getDayOfWeekName() { return(currentDate.formatDate('%A', _tz)); }
-	getTZ() { return(currentDate.formatDate('%z')); }
-	getTZOffset() {
-		return(toInteger(currentDate.formatDate('%Z', _tz)) / 100);
+	getDay(v?) {
+		v = (v ? v : currentDate);
+		return(parseInt(v.formatDate('%d', _tz)));
 	}
-	getTZUTCOffset() {
+	getDayOrd(v?) {
+		v = (v ? v : currentDate);
+		return(v.formatDate('%t', _tz));
+	}
+	getMonth(v?) {
+		v = (v ? v : currentDate);
+		return(parseInt(v.formatDate('%m', _tz)));
+	}
+	getMonthName(v?) {
+		v = (v ? v : currentDate);
+		return(v.formatDate('%B', _tz));
+	}
+	getMonthAbbr(v?) {
+		v = (v ? v : currentDate);
+		return(v.formatDate('%b', _tz));
+	}
+	getYear(v?) {
+		v = (v ? v : currentDate);
+		return(parseInt(v.formatDate('%Y', _tz)));
+	}
+	getDayOfYear(v?) {
+		v = (v ? v : currentDate);
+		return(parseInt(v.formatDate('%j', _tz)));
+	}
+	getDayOfWeek(v?) {
+		v = (v ? v : currentDate);
+		return(parseInt(v.formatDate('%w', _tz)));
+	}
+	getDayOfWeekName(v?) {
+		v = (v ? v : currentDate);
+		return(v.formatDate('%A', _tz));
+	}
+	getTZ(v?) {
+		v = (v ? v : currentDate);
+		return(v.formatDate('%z'));
+	}
+	getTZOffset(v?) {
+		v = (v ? v : currentDate);
+		return(toInteger(v.formatDate('%Z', _tz)) / 100);
+	}
+	getTZUTCOffset(v?) {
 		local off;
-		off = getTZOffset();
+		off = getTZOffset(v);
 		return('UTC<<((off > 0) ? '+' : '')>><<toString(off)>>');
 	}
-	getHour() { return(parseInt(currentDate.formatDate('%H', _tz))); }
-	getJulianDate() { return(parseInt(currentDate.formatDate('%J'))); }
-	getFullJulianDate() { return(currentDate.formatDate('%J')); }
-	getTimestamp() { return(toInteger(currentDate.formatDate('%s'))); }
+	getHour(v?) {
+		v = (v ? v : currentDate);
+		return(parseInt(v.formatDate('%H', _tz)));
+	}
+	getJulianDate(v?) {
+		v = (v ? v : currentDate);
+		return(parseInt(v.formatDate('%J')));
+	}
+	getFullJulianDate(v?) {
+		v = (v ? v : currentDate);
+		return(v.formatDate('%J'));
+	}
+	getTimestamp(v?) {
+		v = (v ? v : currentDate);
+		return(toInteger(v.formatDate('%s')));
+	}
 
 	cloneDate() {
 		return(new Date(toInteger(currentDate.formatDate('%s')), 'U'));
@@ -308,13 +353,13 @@ class Calendar: object
 	}
 
 	// Get a (very) approximate Greenwich sidereal time at midnight.
-	getSiderealTime() {
+	getSiderealTime(v?) {
 		local d0, jd;
 
-		if(_sidereal != nil)
+		if((_sidereal != nil) && (v == nil))
 			return(_sidereal);
 
-		d0 = new Date(getYear(), getMonth(), getDay(),
+		d0 = new Date(getYear(v), getMonth(v), getDay(v),
 			_tz);
 
 		jd = d0.getJulianDay();
@@ -327,9 +372,10 @@ class Calendar: object
 			jd += 24;
 		while(jd > 24)
 			jd -= 24;
-		_sidereal = jd;
+		if(v == nil)
+			_sidereal = jd;
 
-		return(_sidereal);
+		return(jd);
 	}
 
 	// Get the local sidereal time.  
