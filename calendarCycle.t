@@ -295,4 +295,8 @@ modify Calendar
 		setYMD(y, m, d);
 		setPeriod(id, j);
 	}
+
+	getPeriod(d) {
+		return(matchPeriod(getHour(d)));
+	}
 ;
