@@ -116,7 +116,7 @@ enum seasonWinter, seasonSpring, seasonSummer, seasonFall;
 enum eWinterSolstice, eSpringEquinox, eSummerSolstice, eFallEquinox;
 
 #ifdef CALENDAR_EVENTS
-class Calendar: EventNotifier
+class Calendar: EventSource
 #else // CALENDAR_EVENTS
 class Calendar: object
 #endif // CALENDAR_EVENTS

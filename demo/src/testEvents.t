@@ -35,18 +35,18 @@ gameMain: GameMainDef
 		<.p> ";
 	}
 	newGame() {
-		gCalendar.subscribe(myNotifier);
+		gCalendar.subscribe(myNotifier, '*');
 		inherited();
 	}
 ;
 
-myNotifier: EventListener
+myNotifier: EventSubscriber
 	eventHandler(obj) {
 		// We're subscribed to ALL calendar notifications, so
 		// we filter here in the handler.  We could
 		// alternately add an event type as the second arg
 		// when we subscribe.
-		if(obj.type != 'dateChange')
+		if(obj.type != 'periodChange')
 			return;
 		"<.p>This is the rather useless event handler.<.p> ";
 	}

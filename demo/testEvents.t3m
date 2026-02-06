@@ -6,6 +6,7 @@
 -o games/testEvents.t3
 -lib system
 -lib adv3/adv3
--lib eventHandler/eventHandler
+-lib asyncEvent/asyncEvent
 -lib ../calendar
 -source src/testEvents.t
+-source reflect
