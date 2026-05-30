@@ -227,6 +227,8 @@ class Period: object
 modify Calendar
 	dailyCycle = nil
 
+	unknownPeriod = 'Unknown'
+
 	setDailyCycle(v) {
 		if((v == nil) || !v.ofKind(DailyCycle))
 			return(nil);
@@ -262,6 +264,17 @@ modify Calendar
 	matchPeriod(h?) { return(getDailyCycle().matchPeriod(resolveHour(h))); }
 
 	currentPeriod() { return(matchPeriod()); }
+
+	currentPeriodName() {
+		local c, p;
+
+		if((c = getDailyCycle()) == nil)
+			return(unknownPeriod);
+		if((p = c.getPeriod(matchPeriod())) == nil)
+			return(unknownPeriod);
+
+		return(p.name);
+	}
 
 	// Advance to the next period, advancing the day if necessary.
 	advancePeriod(j?) {

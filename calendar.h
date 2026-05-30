@@ -18,6 +18,8 @@
 #define gCalendar (gameCalendar)
 #define gCalendarTime (gameCalendar.currentTime)
 #define gCalendarDiff(v) (gameCalendar.dateDiff(v))
+#define gCalendarPeriod gameCalendar.currentPeriod()
+#define gCalendarPeriodName gameCalendar.currentPeriodName()
 
 Period template 'id' 'name'? +hour;
 
